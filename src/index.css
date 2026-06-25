@@ -1,0 +1,300 @@
+@import "tailwindcss";
+
+/* Class-based dark mode (toggle in nav). Light is the primary, on-spec theme;
+   dark inverts to the Obsidian panel surface while preserving Voltage. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================================
+   NewForm broadsheet design tokens — the authoritative visual spec.
+   ========================================================================== */
+@theme {
+  /* Colors */
+  --color-linen: #fafffa;
+  --color-obsidian-ink: #121613;
+  --color-pure-black: #000000;
+  --color-bark: #232924;
+  --color-sage: #516254;
+  --color-mist: #c8d2c8;
+  --color-voltage: #2bee4b;
+  --color-moss-glow: #93b799;
+  --color-pollen: #c4e4c9;
+
+  /* Semantic aliases (so components read intent, not raw hex) */
+  --color-canvas: var(--color-linen);
+  --color-ink: var(--color-obsidian-ink);
+
+  /* Font families — licensed faces with the spec's documented substitutes */
+  --font-twk-lausanne: "Inter", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-editorial-new: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-pp-mondwest: "DM Serif Display", Georgia, "Times New Roman", serif;
+  --font-times: "Times New Roman", Times, serif;
+
+  /* Type scale (small UI sizes; display uses fluid clamps below) */
+  --text-caption: 11px;
+  --text-caption--line-height: 1.4;
+  --text-caption--letter-spacing: 0.11px;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.4;
+  --text-body-sm--letter-spacing: -0.28px;
+  --text-body: 16px;
+  --text-body--line-height: 1.4;
+  --text-body--letter-spacing: -0.32px;
+  --text-subheading: 18px;
+  --text-subheading--line-height: 1.4;
+  --text-subheading--letter-spacing: -0.36px;
+
+  /* Spacing scale */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-10: 10px;
+  --spacing-15: 15px;
+  --spacing-20: 20px;
+  --spacing-25: 25px;
+  --spacing-30: 30px;
+  --spacing-32: 32px;
+  --spacing-35: 35px;
+  --spacing-40: 40px;
+  --spacing-45: 45px;
+  --spacing-50: 50px;
+  --spacing-55: 55px;
+  --spacing-60: 60px;
+  --spacing-120: 120px;
+  --spacing-190: 190px;
+
+  /* Radius */
+  --radius-button: 10px;
+  --radius-small: 5px;
+  --radius-card: 14px;
+  --radius-image: 14px;
+
+  /* Shadows — only ever used on the Voltage CTA (per spec) */
+  --shadow-voltage: rgba(16, 94, 29, 0.45) 1px 8px 20px 0px,
+    rgba(18, 146, 39, 0.25) 1px 8px 20px 0px;
+
+  /* Layout */
+  --page-max-width: 1440px;
+}
+
+/* ============================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: var(--color-mist);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-linen);
+    color: var(--color-obsidian-ink);
+    font-family: var(--font-twk-lausanne);
+    font-weight: 400;
+    letter-spacing: -0.32px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Dark inversion: Obsidian panel canvas, Linen text. Voltage stays. */
+  .dark body {
+    background-color: var(--color-obsidian-ink);
+    color: var(--color-linen);
+  }
+  .dark * {
+    border-color: var(--color-bark);
+  }
+
+  /* Visible, on-brand keyboard focus */
+  :focus-visible {
+    outline: 2px solid var(--color-voltage);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-voltage);
+    color: var(--color-obsidian-ink);
+  }
+}
+
+/* ============================================================================
+   Components / utilities
+   ========================================================================== */
+@layer components {
+  .page-shell {
+    max-width: var(--page-max-width);
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+  @media (min-width: 768px) {
+    .page-shell {
+      padding-inline: 50px;
+    }
+  }
+
+  /* Fluid broadsheet display headlines (line-height 0.90 is the signature) */
+  .display-xl {
+    font-family: var(--font-editorial-new);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    font-size: clamp(56px, 13vw, 240px);
+  }
+  .display-lg {
+    font-family: var(--font-editorial-new);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    font-size: clamp(44px, 9vw, 140px);
+  }
+  .display-mond {
+    font-family: var(--font-pp-mondwest);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    font-size: clamp(48px, 11vw, 165px);
+  }
+  .heading {
+    font-family: var(--font-editorial-new);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    font-size: clamp(32px, 5vw, 60px);
+  }
+  .heading-sm {
+    font-family: var(--font-editorial-new);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    font-size: clamp(26px, 3.4vw, 40px);
+  }
+
+  /* Eyebrow / small uppercase label */
+  .eyebrow {
+    font-family: var(--font-twk-lausanne);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-sage);
+  }
+  .dark .eyebrow {
+    color: var(--color-moss-glow);
+  }
+
+  /* Times caption pair */
+  .caption {
+    font-family: var(--font-times);
+    font-size: 15px;
+    line-height: 1.2;
+    color: var(--color-sage);
+  }
+  .dark .caption {
+    color: var(--color-moss-glow);
+  }
+
+  /* The single filled action on the site */
+  .btn-voltage {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--color-voltage);
+    color: var(--color-obsidian-ink);
+    font-family: var(--font-twk-lausanne);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    padding: 18px 36px;
+    border-radius: var(--radius-button);
+    box-shadow: var(--shadow-voltage);
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+  .btn-voltage:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.04);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-voltage {
+      transition: none;
+    }
+    .btn-voltage:hover {
+      transform: none;
+    }
+  }
+
+  /* Ghost link button */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-twk-lausanne);
+    font-weight: 350;
+    font-size: 14px;
+    color: var(--color-obsidian-ink);
+    text-decoration-color: transparent;
+    text-underline-offset: 4px;
+    transition: text-decoration-color 0.18s ease;
+  }
+  .btn-ghost:hover {
+    text-decoration-line: underline;
+    text-decoration-color: currentColor;
+  }
+  .dark .btn-ghost {
+    color: var(--color-linen);
+  }
+
+  /* The green tick — decorative visual rest */
+  .tick {
+    display: inline-block;
+    width: 50px;
+    height: 2px;
+    background-color: var(--color-voltage);
+  }
+
+  /* Editorial image tile: monochrome gradient placeholders, 14px radius */
+  .tile {
+    border-radius: var(--radius-image);
+    overflow: hidden;
+    position: relative;
+  }
+}
+
+/* ============================================================================
+   Motion: gentle scroll reveal (disabled under reduced-motion via JS + CSS)
+   ========================================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

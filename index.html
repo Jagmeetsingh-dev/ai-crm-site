@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Primary SEO -->
+    <title>AI CRM — Lead-to-Deal CRM with AI for Service Businesses</title>
+    <meta
+      name="description"
+      content="A focused, AI-powered CRM for realtors, solar, insurance, and agencies. Drag-and-drop pipeline, real dashboards, and AI lead scoring & follow-ups. Start free."
+    />
+    <meta name="theme-color" content="#fafffa" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AI CRM — Lead-to-Deal CRM with AI for Service Businesses" />
+    <meta
+      property="og:description"
+      content="Turn every lead into a closed deal. A drag-and-drop pipeline, a dashboard that tells the truth, and an AI assistant that scores leads and drafts follow-ups."
+    />
+    <meta property="og:image" content="/og-image.svg" />
+    <meta property="og:site_name" content="AI CRM" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AI CRM — Lead-to-Deal CRM with AI for Service Businesses" />
+    <meta
+      name="twitter:description"
+      content="A focused, AI-powered CRM for realtors, solar, insurance, and agencies. Start free."
+    />
+    <meta name="twitter:image" content="/og-image.svg" />
+
+    <!-- Fonts: substitutes per design spec (Inter for TWK Lausanne, Playfair Display
+         for Editorial New, DM Serif Display for PP Mondwest) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500&family=DM+Serif+Display&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Set theme before paint to avoid flash -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("aicrm-theme");
+          var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (stored === "dark" || (!stored && prefersDark)) {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
