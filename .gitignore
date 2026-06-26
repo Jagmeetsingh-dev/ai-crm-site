@@ -5,6 +5,14 @@ dist-ssr
 .DS_Store
 .vite
 
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Build cache
+*.tsbuildinfo
+
 # Editor
 .vscode/*
 !.vscode/extensions.json
