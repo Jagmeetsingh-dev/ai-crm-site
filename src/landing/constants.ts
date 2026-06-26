@@ -10,6 +10,8 @@ export const LINKS = {
   login: "/login",
   demo: "/login?demo=1",
   docs: "/docs",
+  /** Where "talk to sales / email us" actions point. */
+  salesEmail: "sales@aicrm.dev",
 } as const;
 
 /** Demo credentials shown in the hero secondary CTA microcopy. */
@@ -17,6 +19,13 @@ export const DEMO_CREDENTIALS = {
   email: "demo@aicrm.dev",
   password: "Demo1234!",
 } as const;
+
+/* ----------------------------------------------------------------------------
+ * LEAD CAPTURE
+ * Sign-up and login leads POST to the Webezio Labs submissions API via
+ * `src/lib/webezio.ts`. Set `VITE_WEBEZIO_API_KEY` in your `.env` (see
+ * `.env.example`) to go live; until then forms still show the success state.
+ * -------------------------------------------------------------------------- */
 
 /* ----------------------------------------------------------------------------
  * BOOKING (Cal.com)

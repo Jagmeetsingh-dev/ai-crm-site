@@ -22,8 +22,8 @@ import {
   TEAM_SIZES,
 } from "../landing/constants";
 import { ChoiceChips, SelectField, TextField } from "../landing/components/ui/Field";
-import { VoltageButton } from "../landing/components/ui/Button";
 import { BookDemo } from "./BookDemo";
+import { isWebezioConfigured, submitToWebezio } from "@/lib/webezio";
 
 /* -------------------------------------------------------------------------- */
 /* Form state + validation                                                    */
@@ -172,20 +172,21 @@ function SuccessPanel({ data, onBookCall }: { data: FormData; onBookCall: () => 
         <Check size={24} strokeWidth={2.5} aria-hidden="true" />
       </span>
       <h2 className="heading-sm mt-6 text-obsidian-ink dark:text-linen">
-        You're in, {data.fullName.split(" ")[0] || "there"}.
+        Thanks, {data.fullName.split(" ")[0] || "there"} — we have your details.
       </h2>
       <p className="mt-4 max-w-[48ch] font-twk-lausanne text-[16px] font-[350] leading-relaxed text-obsidian-ink/80 dark:text-linen/80">
-        Your <span className="text-obsidian-ink dark:text-linen">{data.plan}</span> workspace for{" "}
+        We've received everything for{" "}
         <span className="text-obsidian-ink dark:text-linen">{data.company || "your business"}</span>{" "}
-        is ready to set up. We've noted your details — next, confirm your email and import your first
-        leads.
+        and a {data.plan} workspace. Our team will reach out to{" "}
+        <span className="text-obsidian-ink dark:text-linen">{data.email || "your email"}</span> shortly
+        to get you set up.
       </p>
 
       <ul className="mt-7 flex flex-col gap-3">
         {[
-          "Check your inbox to confirm your email.",
-          "Add or import your first leads.",
-          "Run the AI assistant on a lead in one click.",
+          "Keep an eye on your inbox — we'll email you next steps.",
+          "We'll tailor a walkthrough to how your team works.",
+          "Want to talk sooner? Book a call below.",
         ].map((line) => (
           <li key={line} className="flex gap-2.5">
             <Check size={17} strokeWidth={2.25} className="mt-0.5 shrink-0 text-voltage" aria-hidden="true" />
@@ -197,16 +198,13 @@ function SuccessPanel({ data, onBookCall }: { data: FormData; onBookCall: () => 
       </ul>
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
-        <VoltageButton href={LINKS.login}>Go to your workspace</VoltageButton>
-        <button type="button" onClick={onBookCall} className="btn-ghost">
-          <CalendarClock size={16} aria-hidden="true" /> Book an onboarding call
+        <button type="button" onClick={onBookCall} className="btn-voltage">
+          <CalendarClock size={16} aria-hidden="true" /> Book a call with sales
         </button>
+        <a href={`mailto:${LINKS.salesEmail}`} className="btn-ghost">
+          Email us instead
+        </a>
       </div>
-
-      <p className="mt-6 font-times text-[13px] italic text-sage dark:text-moss-glow">
-        Demo build — no account is actually created. Wire this form's submit to your signup API to go
-        live.
-      </p>
     </div>
   );
 }
@@ -232,6 +230,8 @@ export default function SignUpPage() {
   const [data, setData] = useState<FormData>({ ...EMPTY, plan: initialPlan });
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const set = <K extends keyof FormData>(key: K, value: FormData[K]) => {
     setData((d) => ({ ...d, [key]: value }));
@@ -253,15 +253,41 @@ export default function SignUpPage() {
     setStep((s) => Math.max(s - 1, 0));
   };
 
-  const submit = (ev: React.FormEvent) => {
+  const submit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     const e = validateStep(step, data);
     if (Object.keys(e).length) {
       setErrors(e);
       return;
     }
-    // No backend in this static build — surface a success state.
-    setSubmitted(true);
+
+    setSubmitError(null);
+
+    // Collect every captured field to hand off to the lead endpoint. The
+    // password is intentionally excluded — we don't create real accounts here.
+    const { password: _password, ...lead } = data;
+    const payload = {
+      ...lead,
+      source: "signup",
+      submittedAt: new Date().toISOString(),
+    };
+
+    // No key wired up yet → behave like the static demo and just succeed.
+    if (!isWebezioConfigured) {
+      setSubmitted(true);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // A workspace sign-up is a "membership" lead in the Webezio inbox.
+      await submitToWebezio("membership", payload);
+      setSubmitted(true);
+    } catch {
+      setSubmitError("Something went wrong sending your details. Please try again in a moment.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const planNames = PRICING.tiers.map((t) => t.name);
@@ -481,11 +507,19 @@ export default function SignUpPage() {
                       Continue <ArrowRight size={16} strokeWidth={2.25} aria-hidden="true" />
                     </button>
                   ) : (
-                    <button type="submit" className="btn-voltage">
-                      Create account <ArrowRight size={16} strokeWidth={2.25} aria-hidden="true" />
+                    <button type="submit" className="btn-voltage" disabled={submitting} aria-busy={submitting}>
+                      {submitting ? "Sending…" : "Get started"}
+                      {!submitting && <ArrowRight size={16} strokeWidth={2.25} aria-hidden="true" />}
                     </button>
                   )}
                 </div>
+
+                {submitError && (
+                  <p role="alert" className="mt-4 font-twk-lausanne text-[13px] font-[500] text-obsidian-ink dark:text-linen">
+                    <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-voltage align-middle" aria-hidden="true" />
+                    {submitError}
+                  </p>
+                )}
               </form>
 
               <p className="mt-6 font-twk-lausanne text-[14px] font-[350] text-sage dark:text-moss-glow">
